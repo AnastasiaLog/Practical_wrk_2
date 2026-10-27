@@ -1,0 +1,7 @@
+{
+  "package_name": "accountsservice",
+  "repo_url": "http://archive.ubuntu.com/ubuntu",
+  "repo_mode": "remote",
+  "package_version": "22.07.5-2ubuntu1",
+  "tree_mode": "full"
+}
