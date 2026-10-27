@@ -10,8 +10,10 @@ def main():
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     default_config = os.path.join(base_dir, "config.json")
 
-    parser = argparse.ArgumentParser(description="Инструмент визуализации графа зависимостей (Этап 2)")
-    parser.add_argument("-c", "--config", default=default_config, help="Путь к JSON-конфигу")
+    parser = argparse.ArgumentParser(
+        description="Инструмент визуализации графа зависимостей (Этап 2)")
+    parser.add_argument("-c", "--config", default=default_config,
+                        help="Путь к JSON-конфигу")
     args = parser.parse_args()
 
     try:
@@ -24,18 +26,23 @@ def main():
         if cfg["repo_mode"] == "remote":
             print("\nПоиск прямых зависимостей...")
 
-            deps, error = get_dependencies(cfg["repo_url"], cfg["package_name"], cfg["package_version"])
+            deps, error = get_dependencies(cfg["repo_url"],
+                                           cfg["package_name"],
+                                           cfg["package_version"])
 
             if error:
                 print(f"Ошибка: {error}")
             elif not deps:
                 print("У пакета нет прямых зависимостей.")
             else:
-                print(f"\nПрямые зависимости пакета '{cfg['package_name']}' ({cfg['package_version']}):")
+                print(f"\nПрямые зависимости пакета '"
+                      f"{cfg['package_name']}' ("
+                      f"{cfg['package_version']}):")
                 for d in deps:
                     print(f"  - {d}")
         else:
-            print("\nРежим 'local' пока не поддерживается для сбора данных.")
+            print("\nРежим 'local' пока не "
+                  "поддерживается для сбора данных.")
 
         return 0
     except ConfigError as e:

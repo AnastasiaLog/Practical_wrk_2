@@ -55,4 +55,5 @@ def get_dependencies(repo_url, package_name, package_version):
             deps_list = [d.strip() for d in depends.split(',') if d.strip()]
             return deps_list, None
 
-    return None, f"Пакет '{package_name}' версии '{package_version}' не найден."
+    return None, f"Пакет '{package_name}' " \
+                 f"версии '{package_version}' не найден."

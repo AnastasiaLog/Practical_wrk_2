@@ -1,5 +1,7 @@
 import pytest
-from src.validators import ConfigError, validate_package_name, validate_repo_mode
+from src.validators import ConfigError, \
+    validate_package_name, \
+    validate_repo_mode
 
 def test_package_name_ok():
     assert validate_package_name("curl") == "curl"
