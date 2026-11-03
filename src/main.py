@@ -4,6 +4,15 @@ import os
 from config_loader import load_config
 from validators import ConfigError
 from fetcher import get_dependencies
+from local_repo import load_local_graph
+from graph import make_graph
+
+
+def print_graph(graph):
+    print("\nГраф зависимостей (DFS):")
+    for name in sorted(graph):
+        deps = ", ".join(sorted(graph[name])) if graph[name] else "—"
+        print(f"  {name}: {deps}")
 
 
 def main():
@@ -11,7 +20,7 @@ def main():
     default_config = os.path.join(base_dir, "config.json")
 
     parser = argparse.ArgumentParser(
-        description="Инструмент визуализации графа зависимостей (Этап 2)")
+        description="Инструмент визуализации графа зависимостей (Этап 3)")
     parser.add_argument("-c", "--config", default=default_config,
                         help="Путь к JSON-конфигу")
     args = parser.parse_args()
@@ -23,28 +32,38 @@ def main():
         for key, val in cfg.items():
             print(f"  {key.ljust(15)}: {val}")
 
-        if cfg["repo_mode"] == "remote":
-            print("\nПоиск прямых зависимостей...")
+        if cfg["repo_mode"] == "local":
+            packages = load_local_graph(cfg["repo_url"])
+            root = cfg["package_name"].upper()
+            if root not in packages:
+                raise ConfigError(
+                    f"Пакет '{root}' отсутствует в тестовом репозитории.")
+            print(f"\nЛокальный режим: граф загружен из "
+                  f"'{cfg['repo_url']}'.")
 
-            deps, error = get_dependencies(cfg["repo_url"],
-                                           cfg["package_name"],
-                                           cfg["package_version"])
+        elif cfg["repo_mode"] == "remote":
+            print("\nПоиск прямых зависимостей...")
+            deps, error = get_dependencies(
+                cfg["repo_url"], cfg["package_name"], cfg["package_version"])
 
             if error:
                 print(f"Ошибка: {error}")
-            elif not deps:
-                print("У пакета нет прямых зависимостей.")
-            else:
-                print(f"\nПрямые зависимости пакета '"
-                      f"{cfg['package_name']}' ("
-                      f"{cfg['package_version']}):")
-                for d in deps:
-                    print(f"  - {d}")
+                return 1
+
+            root = cfg["package_name"]
+            packages = {root: set(deps or [])}
+            print(f"Прямые зависимости '{root}' "
+                  f"({cfg['package_version']}): "
+                  f"{', '.join(sorted(packages[root])) or '—'}")
+
         else:
-            print("\nРежим 'local' пока не "
-                  "поддерживается для сбора данных.")
+            raise ConfigError(f"Неизвестный режим: {cfg['repo_mode']}")
+
+        graph = make_graph(root, packages)
+        print_graph(graph)
 
         return 0
+
     except ConfigError as e:
         print(f"Ошибка конфигурации: {e}", file=sys.stderr)
         return 2
