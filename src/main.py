@@ -6,6 +6,7 @@ from validators import ConfigError
 from fetcher import get_dependencies
 from local_repo import load_local_graph
 from graph import make_graph
+from visualizer import to_plantuml, print_ascii_tree, save_plantuml
 
 
 def print_graph(graph):
@@ -62,7 +63,16 @@ def main():
                               f"{cfg['repo_mode']}")
 
         graph = make_graph(root, packages)
-        print_graph(graph)
+
+        print("\n--- PlantUML ---")
+        print(to_plantuml(graph, root))
+
+        puml_file = save_plantuml(graph, root, "graph.puml")
+        print(f"\nPlantUML сохранен в файл: {puml_file}")
+
+        if cfg["tree_mode"] == "full":
+            print("\n--- ASCII-дерево ---")
+            print_ascii_tree(graph, root)
 
         return 0
 
