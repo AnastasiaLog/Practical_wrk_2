@@ -44,7 +44,8 @@ def main():
         elif cfg["repo_mode"] == "remote":
             print("\nПоиск прямых зависимостей...")
             deps, error = get_dependencies(
-                cfg["repo_url"], cfg["package_name"], cfg["package_version"])
+                cfg["repo_url"], cfg["package_name"],
+                cfg["package_version"])
 
             if error:
                 print(f"Ошибка: {error}")
@@ -57,7 +58,8 @@ def main():
                   f"{', '.join(sorted(packages[root])) or '—'}")
 
         else:
-            raise ConfigError(f"Неизвестный режим: {cfg['repo_mode']}")
+            raise ConfigError(f"Неизвестный режим: "
+                              f"{cfg['repo_mode']}")
 
         graph = make_graph(root, packages)
         print_graph(graph)

@@ -12,6 +12,8 @@ def load_local_graph(path):
             name, deps = line.split(":", 1)
             name = name.strip().upper()
             if not re.fullmatch(r"[A-Z]+", name):
-                raise ValueError(f"Имя пакета должно быть заглавными латинскими: {name}")
-            packages[name] = {d.strip().upper() for d in deps.split() if d.strip()}
+                raise ValueError(f"Имя пакета должно быть "
+                                 f"заглавными латинскими: {name}")
+            packages[name] = {d.strip().upper() for d
+                              in deps.split() if d.strip()}
     return packages
